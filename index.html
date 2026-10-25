@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Тренажёр · Информатика 9 класс</title>
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--tx:#1d2433;--mut:#6b7488;--ac:#3f6df6;--ok:#1f9d55;--bad:#d64545;--bd:#dde2ee;--hi:#eef2ff}
+@media(prefers-color-scheme:dark){:root{--bg:#10131b;--card:#1a1f2b;--tx:#e8ecf5;--mut:#98a2b8;--ac:#6f93ff;--ok:#43c47c;--bad:#ff7a7a;--bd:#2c3446;--hi:#232b40}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:760px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(40px + env(safe-area-inset-bottom,0px))}
+h1{font-size:1.5rem;margin:6px 0}h2{font-size:1.15rem;margin:22px 0 10px}.m{color:var(--mut);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.tc{cursor:pointer;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}
+.tc:active,.tc:hover{border-color:var(--ac)}.tc b{display:block}.tc small{color:var(--mut)}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--bd);padding:11px 16px;color:var(--tx);background:var(--card)}
+.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}.g{background:transparent}
+.big{width:100%;text-align:left;padding:14px;margin-bottom:8px;font-weight:600}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--mut)}
+.bar{height:6px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:12px}.bar i{display:block;height:100%;background:var(--ac)}
+.tag{color:var(--mut);font-size:.85rem;margin-bottom:6px}.q{font-size:1.1rem;margin:4px 0 14px;line-height:1.55}.sub{color:var(--mut);font-size:.9rem;margin:-6px 0 10px}
+pre{background:var(--hi);border-radius:10px;padding:10px 12px;margin:10px 0;overflow-x:auto;font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}
+.opt{display:block;width:100%;text-align:left;margin-bottom:8px;font-size:1.02rem}.opt.sel{border-color:var(--ac);background:var(--hi)}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.15)}.opt.no{border-color:var(--bad);background:rgba(214,69,69,.15)}
+input{width:100%;font:inherit;font-size:1.15rem;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.row .p{flex:1}
+.hint{background:var(--hi);border-radius:10px;padding:10px 12px;margin-top:12px}
+.fb{margin-top:14px;padding:12px;border-radius:10px;border:1px solid var(--bd)}.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.rb{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.95rem}.rb span:first-child{width:46%}.rb .t{flex:1;height:12px;background:var(--bd);border-radius:8px;overflow:hidden}.rb .t i{display:block;height:100%}
+.big2{font-size:2.4rem;font-weight:700}.ch{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:8px}.ch div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:3px}
+.err{border-top:1px solid var(--bd);padding:10px 0}.err small{color:var(--mut)}
+</style></head><body><div id="app"></div>
+<script>
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pk=a=>a[ri(0,a.length-1)];
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const pn=(a,n)=>sh(a).slice(0,n);
+const F=n=>String(Math.round(n*1e6)/1e6).replace('.',',').replace('-','−');
+const nm=s=>String(s).toLowerCase().replace(/ё/g,'е').replace(/[^а-яa-z0-9]/g,'');
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const pre=c=>'<pre>'+esc(c)+'</pre>';
+const T=[
+{id:'mod',n:'Модели и моделирование',i:'🧪',s:'Виды моделей, этапы, формализация · §1.1–§1.2'},
+{id:'graf',n:'Графы и таблицы',i:'🕸️',s:'Пути, степени вершин, деревья · §1.3–§1.4'},
+{id:'db',n:'Базы данных',i:'🗄️',s:'Записи, поля, запросы на выборку · §1.5–§1.6'},
+{id:'alg',n:'Алгоритмы: что выведет программа',i:'⚙️',s:'Циклы, ветвления, трассировка · §2.1, §2.3, §2.5'},
+{id:'arr',n:'Массивы',i:'📚',s:'Обработка одномерных массивов · §2.2'},
+{id:'pas',n:'Подпрограммы и Паскаль',i:'🧱',s:'Процедуры и функции · §2.4'},
+{id:'xl',n:'Электронные таблицы',i:'📊',s:'Ссылки, функции, диаграммы · гл. 3'},
+{id:'inf',n:'Кодирование и измерение информации',i:'💾',s:'Системы счисления, объёмы (повторение для ОГЭ)'},
+{id:'logic',n:'Логика',i:'🔀',s:'И, ИЛИ, НЕ, таблицы истинности (повторение для ОГЭ)'},
+{id:'net',n:'Сети и Интернет',i:'🌐',s:'IP, URL, протоколы, скорость · гл. 4'}];
+const LET=['А','Б','В','Г','Д','Е','Ж'];
+const mcb=arr=>()=>{const[q,a,w,h,e]=pk(arr);return{q,o:[a,...w],h:h||'Вспомни текст параграфа.',e:e||'Верный ответ: '+a}};
+const tf=(q,t,e,h)=>({q,o:['Верно','Неверно'],fix:1,ci0:t?0:1,h:h||'Подумай и сверься с учебником.',e});
+const MP=[['Модель','новый объект, отражающий существенные признаки изучаемого объекта'],['Моделирование','метод познания, состоящий в создании и исследовании моделей'],['Формализация','замена реального объекта его формальным описанием'],['Информационная модель','описание объекта-оригинала на одном из языков кодирования информации'],['Натурная (материальная) модель','реальный предмет, воспроизводящий свойства оригинала (макет, глобус)'],['Динамическая модель','модель, отражающая изменение объекта во времени'],['Статическая модель','модель, описывающая объект в определённый момент времени'],['Знаковая модель','информационная модель, выраженная специальными знаками (формулы, текст, программа)'],['Объект-оригинал','то, что моделируется (прототип модели)']];
+// ---- вспомогательные
+const COL='ABCDEFGH';
+const shf=(ref,dx,dy)=>{const m=/^(\$?)([A-H])(\$?)(\d+)$/.exec(ref);let c=COL.indexOf(m[2]),r=+m[4];if(!m[1])c+=dx;if(!m[3])r+=dy;return m[1]+COL[c]+m[3]+r};
+const mkref=(t,c,r)=>[COL[c]+r,'$'+COL[c]+r,COL[c]+'$'+r,'$'+COL[c]+'$'+r][t];
+const SUR=[['Иванов','м'],['Петрова','ж'],['Сидоров','м'],['Кузнецова','ж'],['Смирнов','м'],['Орлова','ж'],['Попов','м'],['Волкова','ж'],['Морозов','м'],['Лебедева','ж']];
+const G={
+mod:[
+()=>{const t=pk(MP),w=pn(MP.filter(x=>x!==t),3);return{q:'Какой термин определён так: «'+t[1]+'»?',o:[t[0],...w.map(x=>x[0])],h:'§1.1. Прочитай «Ключевые слова» и определения в параграфе.',e:t[0]+' — '+t[1]}},
+()=>{const t=pk(MP),w=pn(MP.filter(x=>x!==t),3);return{q:'Что означает термин «'+t[0]+'»?',o:[t[1],...w.map(x=>x[1])],h:'§1.1–§1.2.',e:t[0]+' — '+t[1]}},
+()=>{const t=pk(MP),ok=Math.random()<.5,d=ok?t:pk(MP.filter(x=>x!==t));return tf('Верно ли: «'+t[0]+'» — это '+d[1]+'?',ok,t[0]+' — '+t[1])},
+mcb([['Глобус — это модель…','натурная (материальная)',['информационная знаковая','математическая','словесная'],'§1.1.'],['Какая модель описывается формулой S = v · t?','знаковая (математическая)',['натурная','образная (рисунок)','словесная'],'§1.2.2.'],['Что делают на этапе формализации при построении информационной модели?','заменяют описание объекта формальным (знаковым) описанием',['проводят компьютерный эксперимент','анализируют результаты','выбирают объект моделирования'],'§1.1.2.'],['Географическая карта относится к…','смешанным информационным моделям',['только словесным моделям','натурным моделям','только математическим моделям'],'§1.1.3.'],['Модель, отражающая изменение объекта с течением времени, называется…','динамической',['статической','натурной','образной'],'§1.1.3.'],['С какой целью создают модель объекта?','изучить существенные свойства объекта и упростить исследование',['сделать точную копию объекта','заменить объект навсегда','скопировать все свойства оригинала'],'§1.1.1.'],['Что такое компьютерная математическая модель?','математическая модель, реализованная с помощью программы',['рисунок на компьютере','физический макет','словесное описание на экране'],'§1.2.3.'],['Что является первым шагом при построении информационной модели?','описание задачи и определение цели моделирования',['компьютерный эксперимент','анализ результатов','формализация'],'§1.1.2.']])],
+graf:[
+()=>{const n=pk([5,6]);let E,ans,t=0;do{E=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<.5)E.push([i,j]);const d=Array(n).fill(0);d[0]=1;for(let j=1;j<n;j++)for(const[a,b]of E)if(b===j)d[j]+=d[a];ans=d[n-1]}while((ans<2||ans>14||E.length<n+1||E.length>n+4)&&++t<500);return{q:'Между пунктами проложены односторонние дороги: '+E.map(([a,b])=>LET[a]+'→'+LET[b]).join(', ')+'. Сколько существует разных путей из пункта А в пункт '+LET[n-1]+'?',a:ans,h:'Для каждого пункта посчитай число путей: сумма путей из тех пунктов, откуда в него ведут дороги. §1.3.3.',e:'Считаем количество путей по пунктам по порядку. Для '+LET[n-1]+' получилось '+ans}},
+()=>{const n=pk([5,6]);let E,ans,t=0;do{E=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<.55)E.push([i,j,ri(1,9)]);const d=Array(n).fill(Infinity);d[0]=0;for(let j=1;j<n;j++)for(const[a,b,w]of E)if(b===j)d[j]=Math.min(d[j],d[a]+w);ans=d[n-1]}while((!isFinite(ans)||E.length<n+1||E.length>n+3)&&++t<500);return{q:'Между пунктами проложены односторонние дороги (в скобках — длина): '+E.map(([a,b,w])=>LET[a]+'→'+LET[b]+' ('+w+')').join(', ')+'. Найдите длину кратчайшего пути из А в '+LET[n-1]+'.',a:ans,h:'Для каждого пункта находи минимальную длину пути до него. §1.3.3.',e:'Кратчайший путь из А в '+LET[n-1]+' равен '+ans}},
+()=>{const n=ri(6,15);return{q:'В дереве '+n+' вершин. Сколько в нём рёбер?',a:n-1,h:'У каждой вершины, кроме корня, ровно один «родитель». §1.3.2.',e:'Рёбер на 1 меньше, чем вершин: '+n+' − 1 = '+(n-1)}},
+()=>{const n=pk([5,6]);let E,m,t=0;do{E=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<.5)E.push([i,j])}while(E.length<4&&++t<200);const d=Array(n).fill(0);E.forEach(([a,b])=>{d[a]++;d[b]++});return{q:'Степени вершин графа: '+d.map((x,i)=>LET[i]+' — '+x).join('; ')+'. Сколько в графе рёбер?',a:E.length,h:'Каждое ребро учитывается в степенях двух вершин. Сумма степеней = 2 · число рёбер.',e:'Сумма степеней '+d.reduce((a,b)=>a+b,0)+', рёбер — '+E.length}},
+mcb([['Как называется граф, который связен и не содержит циклов?','дерево',['полный граф','таблица','маршрут'],'§1.3.2.'],['Как называются вершины, соединённые ребром?','смежными',['изолированными','корневыми','листовыми'],'§1.3.2.'],['Что такое степень вершины графа?','число рёбер, выходящих из вершины',['число всех вершин','длина самого длинного пути','число циклов'],'§1.3.2.'],['Как называется вершина дерева, из которой выходят все остальные?','корень',['лист','ветвь','цикл'],'§1.3.2.'],['Какая информационная модель лучше всего показывает связи между объектами?','граф',['формула','текст','диаграмма'],'§1.3.']])],
+db:[
+()=>{let recs,cs,ans,t=0;const X=pk([60,70,80]),C=[['Пол = «ж»',r=>r.sex==='ж'],['Класс = «9А»',r=>r.cl==='9А'],['Балл > '+X,r=>r.b>X]];do{recs=pn(SUR,8).map(s=>({s:s[0],sex:s[1],cl:pk(['9А','9Б','10А']),b:ri(40,100)}));cs=pn(C,2);var op=pk(['И','ИЛИ']);ans=recs.filter(r=>op==='И'?cs[0][1](r)&&cs[1][1](r):cs[0][1](r)||cs[1][1](r)).length}while((ans<1||ans>6)&&++t<300);const tb='Фамилия    Пол  Класс  Балл\n'+recs.map(r=>r.s.padEnd(11)+r.sex.padEnd(5)+r.cl.padEnd(7)+r.b).join('\n');return{q:'Дана таблица базы данных:'+pre(tb)+'Сколько записей будет выбрано по запросу: ('+cs[0][0]+') '+op+' ('+cs[1][0]+')?',a:ans,h:'Проверь каждую строку: «И» — оба условия верны сразу, «ИЛИ» — хотя бы одно. §1.6.4.',e:'Подходят записей: '+ans}},
+mcb([['Как называется строка таблицы базы данных?','запись',['поле','ключ','запрос'],'§1.5.2.'],['Как называется столбец таблицы базы данных?','поле',['запись','отчёт','форма'],'§1.5.2.'],['Что такое ключевое поле?','поле, значения которого не повторяются',['самое длинное поле','поле с числами','первое поле таблицы'],'§1.5.2.'],['Что такое СУБД?','система управления базами данных',['система учёта баз документов','средство быстрого доступа','сервер баз данных'],'§1.6.1.'],['Что такое запрос на выборку?','требование найти в базе записи, удовлетворяющие условию',['способ удалить таблицу','сортировка таблицы','создание формы'],'§1.6.4.'],['Что такое реляционная база данных?','база, в которой данные хранятся в виде связанных таблиц',['база только из одной строки','база, хранящая только рисунки','текстовый документ'],'§1.5.2.'],['Какое условие в запросе выберет записи, в которых выполняются оба условия сразу?','И',['ИЛИ','НЕ','ЛИБО'],'§1.6.4.']])],
+alg:[
+()=>{const s0=ri(0,5),a=ri(1,4),b=a+ri(2,5),c=ri(1,3);let s=s0;for(let i=a;i<=b;i++)s+=i*c;return{q:'Что будет выведено на экран?'+pre(`s := ${s0};\nfor i := ${a} to ${b} do\n  s := s + i${c>1?' * '+c:''};\nwrite(s);`),a:s,h:'Выпиши в таблицу значения i и s на каждом шаге цикла.',e:'Результат: '+s}},
+()=>{const d=ri(3,7),N=ri(20,60);let n=N,k=0;while(n>=d){n-=d;k++}const w=Math.random()<.5;return{q:'Что будет выведено на экран?'+pre(`n := ${N}; k := 0;\nwhile n >= ${d} do begin\n  n := n - ${d};\n  k := k + 1;\nend;\nwrite(${w?'k':'n'});`),a:w?k:n,h:'Цикл повторяется, пока условие верно. Ведите таблицу значений n и k.',e:`Цикл выполнится ${k} раз, n = ${n}, k = ${k}`}},
+()=>{const A=ri(5,30),B=ri(5,30);let c=A>B?A-B:B-A;c=c%2===0?c/2:c*3;return{q:'Что будет выведено на экран?'+pre(`a := ${A}; b := ${B};\nif a > b then c := a - b\n         else c := b - a;\nif c mod 2 = 0 then c := c div 2\n               else c := c * 3;\nwrite(c);`),a:c,h:'Сначала найди c по первому условию, потом проверь чётность (mod — остаток от деления).',e:'Результат: '+c}},
+()=>{let A=ri(12,72),B=ri(12,72);const a0=A,b0=B;while(A!==B){if(A>B)A-=B;else B-=A}return{q:'Что будет выведено на экран?'+pre(`a := ${a0}; b := ${b0};\nwhile a <> b do\n  if a > b then a := a - b\n           else b := b - a;\nwrite(a);`),a:A,h:'Это алгоритм Евклида (вычитание). Ведите таблицу значений a и b.',e:'Выводится НОД чисел '+a0+' и '+b0+' = '+A}},
+()=>{const N=ri(100,9999);let n=N,s=0;while(n>0){s+=n%10;n=Math.floor(n/10)}return{q:'Что будет выведено на экран?'+pre(`n := ${N}; s := 0;\nwhile n > 0 do begin\n  s := s + n mod 10;\n  n := n div 10;\nend;\nwrite(s);`),a:s,h:'n mod 10 — последняя цифра числа, n div 10 — число без последней цифры.',e:'Сумма цифр числа '+N+' = '+s}},
+()=>{const n=ri(3,8);let a=1,b=1;for(let i=1;i<=n;i++){const c=a+b;a=b;b=c}return{q:'Что будет выведено на экран?'+pre(`a := 1; b := 1;\nfor i := 1 to ${n} do begin\n  c := a + b;\n  a := b;\n  b := c;\nend;\nwrite(b);`),a:b,h:'Запиши значения a, b, c после каждого шага цикла.',e:'Результат: '+b}},
+()=>{const N=ri(10,30),k=ri(2,5);let s=0;for(let i=1;i<=N;i++)if(i%k===0)s+=i;return{q:'Что будет выведено на экран?'+pre(`s := 0;\nfor i := 1 to ${N} do\n  if i mod ${k} = 0 then s := s + i;\nwrite(s);`),a:s,h:'Условие i mod '+k+' = 0 выполняется для чисел, кратных '+k+'.',e:'Сумма чисел, кратных '+k+', от 1 до '+N+' = '+s}}],
+arr:[
+()=>{const n=ri(7,9),A=Array.from({length:n},()=>ri(1,30)),p=ri(0,5);let ans,code,h;
+if(p===0){const X=ri(8,20);ans=A.filter(x=>x>X).length;code=`k := 0;\nfor i := 1 to ${n} do\n  if A[i] > ${X} then k := k + 1;\nwrite(k);`;h='Посчитай, сколько элементов больше '+X+'.'}
+else if(p===1){ans=A.filter(x=>x%2===0).reduce((a,b)=>a+b,0);code=`s := 0;\nfor i := 1 to ${n} do\n  if A[i] mod 2 = 0 then s := s + A[i];\nwrite(s);`;h='Складываются только чётные элементы (A[i] mod 2 = 0).'}
+else if(p===2){ans=Math.max(...A);code=`m := A[1];\nfor i := 2 to ${n} do\n  if A[i] > m then m := A[i];\nwrite(m);`;h='Программа ищет наибольший элемент.'}
+else if(p===3){ans=Math.min(...A);code=`m := A[1];\nfor i := 2 to ${n} do\n  if A[i] < m then m := A[i];\nwrite(m);`;h='Программа ищет наименьший элемент.'}
+else if(p===4){let k=0;for(let i=0;i<n-1;i++)if(A[i]<A[i+1])k++;ans=k;code=`k := 0;\nfor i := 1 to ${n-1} do\n  if A[i] < A[i+1] then k := k + 1;\nwrite(k);`;h='Считается, сколько раз следующий элемент больше предыдущего.'}
+else{ans=A[n-1]+A[1];code=`t := A[1];\nA[1] := A[${n}];\nA[${n}] := t;\nwrite(A[1] + A[2]);`;h='Элементы A[1] и A['+n+'] меняются местами.'}
+return{q:'Дан массив: A = ['+A.join(', ')+'] (A[1] = '+A[0]+'). Что будет выведено?'+pre(code),a:ans,h,e:'Результат: '+ans}},
+mcb([['Как правильно описать массив из 10 целых чисел в Паскале?','var A: array[1..10] of integer;',['var A: integer[10];','var A: array of 10;','array A = 10 integer;'],'§2.2.1.'],['Что такое индекс элемента массива?','номер элемента в массиве',['значение элемента','имя массива','тип элемента'],'§2.2.1.'],['Как называется упорядочивание элементов массива по возрастанию или убыванию?','сортировка',['заполнение','вывод','поиск'],'§2.2.6.'],['Как называется просмотр элементов массива один за другим при поиске нужного?','последовательный (линейный) поиск',['сортировка пузырьком','двоичный вывод','заполнение случайными числами'],'§2.2.5.'],['Что такое одномерный массив?','последовательность однотипных элементов с общим именем',['таблица с несколькими столбцами','набор файлов','текст программы'],'§2.2.1.']])],
+pas:[
+()=>{const k=ri(1,9),a=ri(1,6),b=ri(1,6),f=pk([['x * x + '+k,x=>x*x+k],['2 * x - '+k,x=>2*x-k],['x * x - x + '+k,x=>x*x-x+k]]),m=pk([0,1,2]);let expr,ans;if(m===0){expr=`F(${a}) + F(${b})`;ans=f[1](a)+f[1](b)}else if(m===1){expr=`F(F(${a}))`;ans=f[1](f[1](a))}else{expr=`F(${a}) - F(${b})`;ans=f[1](a)-f[1](b)}return{q:'Что будет выведено на экран?'+pre(`function F(x: integer): integer;\nbegin\n  F := ${f[0]};\nend;\n\nbegin\n  write(${expr});\nend.`),a:ans,h:'Сначала вычисли значения функции F для указанных аргументов, затем выполни действие.',e:'Результат: '+ans}},
+mcb([['Какое слово начинает описание процедуры в Паскале?','procedure',['function','program','uses'],'§2.4.1.'],['Чем функция отличается от процедуры?','функция возвращает значение через своё имя',['функция не может иметь параметров','процедура всегда возвращает число','ничем не отличаются'],'§2.4.2.'],['Как называются переменные, описанные внутри подпрограммы?','локальные',['глобальные','постоянные','внешние'],'§2.4.'],['Как называются переменные, описанные в основной программе и доступные из подпрограмм?','глобальные',['локальные','формальные','временные'],'§2.4.'],['Что такое вспомогательный алгоритм?','алгоритм, который можно вызывать из других алгоритмов',['самый первый алгоритм','алгоритм без команд','алгоритм только для робота'],'§2.3.3.'],['Что такое обратная связь в системах управления?','информация о результате воздействия, влияющая на дальнейшее управление',['команда выключения','скорость процессора','внешняя память'],'§2.5.2.'],['Зачем нужны подпрограммы?','чтобы не повторять один и тот же фрагмент кода',['чтобы программа работала медленнее','чтобы убрать комментарии','чтобы скрыть ошибки'],'§2.3.3.']])],
+xl:[
+()=>{let c0,r0,dx,dy,r1,r2,cor,wr,t=0;do{c0=ri(1,3);r0=ri(2,4);dx=ri(1,3);dy=ri(1,3);const t1=ri(0,3),t2=ri(0,3),a=ri(0,3),b=ri(0,3);r1=mkref(t1,a,ri(1,4));r2=mkref(t2,b,ri(1,4));const f=(x,y)=>'='+shf(r1,x,y)+'+'+shf(r2,x,y);cor=f(dx,dy);const rel=s=>s.replace(/\$/g,''),relf=(x,y)=>'='+shf(rel(r1),x,y)+'+'+shf(rel(r2),x,y);wr=[...new Set(['='+r1+'+'+r2,relf(dx,dy),f(dx,0),f(0,dy),relf(dx,0),relf(0,dy)])].filter(x=>x!==cor)}while((wr.length<3||!/\$/.test(r1+r2))&&++t<300);const from=COL[c0]+r0,to=COL[c0+dx]+(r0+dy);return{q:`В ячейке ${from} записана формула =${r1}+${r2}. Её скопировали в ячейку ${to}. Какая формула окажется в ячейке ${to}?`,o:[cor,...pn(wr,3)],h:'Знак $ фиксирует столбец или строку. Остальное смещается так же, как ячейка при копировании. §3.2.1.',e:`Сдвиг: на ${dx} столбц. и ${dy} строк. Без $ адрес сдвигается, с $ — нет. Итог: ${cor}`}},
+()=>{let G,fn,ans,t=0;const fs=[['СУММ',a=>a.reduce((x,y)=>x+y,0)],['МАКС',a=>Math.max(...a)],['МИН',a=>Math.min(...a)],['СРЗНАЧ',a=>a.reduce((x,y)=>x+y,0)/a.length]];do{G=[[ri(1,9),ri(1,9),ri(1,9)],[ri(1,9),ri(1,9),ri(1,9)],[ri(1,9),ri(1,9),ri(1,9)]];fn=pk(fs);var r=ri(0,1),c=ri(0,1),vals=[G[r][c],G[r][c+1],G[r+1][c],G[r+1][c+1]];ans=fn[1](vals)}while(!Number.isInteger(ans)&&++t<200);const tb='   A  B  C\n'+G.map((row,i)=>(i+1)+'  '+row.join('  ')).join('\n');return{q:'Фрагмент электронной таблицы:'+pre(tb)+'Чему равно значение формулы =' + fn[0] + '(' + COL[c]+(r+1)+':'+COL[c+1]+(r+2) + ') ?',a:ans,h:'Диапазон A1:B2 — это прямоугольник между этими ячейками включительно.',e:'Значения в диапазоне: '+vals.join(', ')+'. Результат: '+ans}},
+()=>{const A=ri(1,20),B=ri(1,20),op=pk(['>','<']),r=op==='>'?(A>B?A-B:B-A):(A<B?B-A:A-B);let ans;ans=op==='>'?(A>B?A-B:B-A):(A<B?B-A:A-B);return{q:`В ячейке A1 записано ${A}, в B1 — ${B}. Чему равно значение ячейки C1 с формулой =ЕСЛИ(A1${op}B1;A1-B1;B1-A1)?`,a:(op==='>'?(A>B?A-B:B-A):(A<B?A-B:B-A)),h:'Если условие истинно — выполняется первое выражение, иначе — второе.',e:`Условие A1${op}B1 ${(op==='>'?A>B:A<B)?'истинно':'ложно'}. C1 = ${(op==='>'?(A>B?A-B:B-A):(A<B?A-B:B-A))}`}},
+mcb([['Как называется ссылка вида $A$1?','абсолютная',['относительная','смешанная','циклическая'],'§3.2.1.'],['Какая ссылка изменяется при копировании формулы?','относительная',['абсолютная','любая','ссылка со знаком $ перед столбцом и строкой'],'§3.2.1.'],['С какого символа начинается формула в электронной таблице?','=',['#','@','$'],'§3.1.2.'],['Какая диаграмма лучше всего показывает доли частей в целом?','круговая',['график','гистограмма','точечная'],'§3.3.2.'],['Какая диаграмма лучше всего показывает изменение величины во времени?','график',['круговая','кольцевая','лепестковая'],'§3.3.2.'],['Что такое диапазон ячеек?','прямоугольная группа смежных ячеек',['одна ячейка','весь лист','только столбец'],'§3.1.1.'],['Что означает запись A1:C3?','диапазон от ячейки A1 до C3',['сумму A1 и C3','адрес одной ячейки','условие'],'§3.1.1.']])],
+inf:[
+()=>{const n=ri(5,7),b=Array.from({length:n},()=>ri(0,1));b[0]=1;const s=b.join('');return{q:'Переведите двоичное число '+s+' в десятичную систему счисления.',a:parseInt(s,2),h:'Каждый разряд — степень двойки: …16, 8, 4, 2, 1.',e:s+'₂ = '+parseInt(s,2)}},
+()=>{const n=ri(9,100);return{q:'Переведите число '+n+' в двоичную систему счисления.',x:n.toString(2),h:'Дели число на 2 и записывай остатки, затем прочитай их снизу вверх.',e:n+' = '+n.toString(2)+'₂'}},
+()=>{const N=ri(1,20)*8,i=pk([8,16]);return{q:'Сообщение состоит из '+N+' символов. Каждый символ кодируется '+i+' битами. Сколько байт занимает сообщение?',a:N*i/8,h:'Объём в битах = символов · бит на символ; в байте 8 бит.',e:N+' · '+i+' / 8 = '+N*i/8+' байт'}},
+()=>{const W=pk([8,16,32,64]),H=pk([8,16,32]),b=pk([1,2,4,8]);return{q:'Изображение имеет размер '+W+' × '+H+' пикселей, глубина цвета — '+b+' бит на пиксель. Сколько байт занимает изображение?',a:W*H*b/8,h:'Объём = ширина · высота · глубина цвета (в битах), потом раздели на 8.',e:W+'·'+H+'·'+b+'/8 = '+W*H*b/8}},
+()=>{const k=pk([16,32,64,128,256]);return{q:'Какое минимальное количество бит нужно, чтобы закодировать '+k+' разных символов?',a:Math.log2(k),h:'Найди i, для которого 2^i = '+k+'.',e:'2^'+Math.log2(k)+' = '+k}},
+()=>{const i=ri(3,9);return{q:'Сколько различных символов можно закодировать с помощью '+i+' бит?',a:2**i,h:'Количество кодов равно 2^i.',e:'2^'+i+' = '+2**i}},
+()=>{const k=ri(2,16);return{q:'Сколько байт в '+k+' Кбайт?',a:k*1024,h:'1 Кбайт = 1024 байта.',e:k+' · 1024 = '+k*1024}}],
+logic:[
+()=>{const a=ri(2,8),b=a+ri(4,8),t=pk([0,1]);let q,cor,wr;if(t===0){q=`(X > ${a}) И (X < ${b})`;cor=ri(a+1,b-1);wr=[ri(0,a),ri(b,b+5),ri(b+1,b+9)]}else{q=`(X < ${a}) ИЛИ (X > ${b})`;cor=ri(0,a-1);wr=[ri(a,b),ri(a,b),ri(a+1,b-1)];cor=pk([ri(0,a-1),ri(b+1,b+9)])}const o=[...new Set([cor,...wr])];if(o.length<4){return G.logic[0]()}return{q:'Для какого значения X истинно высказывание '+q+'?',o:o.map(String),h:'Проверь каждое число: «И» — оба условия, «ИЛИ» — хотя бы одно.',e:'Подходит X = '+cor}},
+()=>{const E=[['A И B',(a,b)=>a&&b],['A ИЛИ B',(a,b)=>a||b],['НЕ A ИЛИ B',(a,b)=>!a||b],['A И НЕ B',(a,b)=>a&&!b],['НЕ (A И B)',(a,b)=>!(a&&b)],['НЕ (A ИЛИ B)',(a,b)=>!(a||b)]],e=pk(E),A=ri(0,1),B=ri(0,1),r=e[1](!!A,!!B)?1:0;return{q:'Чему равно значение выражения '+e[0]+' при A = '+A+', B = '+B+'? (ответ: 0 или 1)',a:r,h:'Подставь значения. НЕ меняет 0 на 1 и наоборот. НЕ выполняется раньше И, а И — раньше ИЛИ.',e:e[0]+' = '+r}},
+()=>{const E=[['(A ИЛИ B) И НЕ (A И B)',(a,b)=>(a||b)&&!(a&&b)],['A ИЛИ НЕ B',(a,b)=>a||!b],['НЕ A И НЕ B',(a,b)=>!a&&!b],['(НЕ A) ИЛИ B',(a,b)=>!a||b],['A И B',(a,b)=>a&&b]],e=pk(E);let k=0;for(const a of[0,1])for(const b of[0,1])if(e[1](!!a,!!b))k++;return{q:'Сколько существует наборов значений (A, B), при которых выражение '+e[0]+' истинно?',a:k,h:'Переберите четыре набора: (0,0), (0,1), (1,0), (1,1).',e:'Истинно на '+k+' набор(ах)'}},
+mcb([['Когда высказывание «A ИЛИ B» ложно?','когда A и B оба ложны',['когда A ложно','когда B ложно','когда A и B оба истинны'],'Повторение.'],['Когда высказывание «A И B» истинно?','когда A и B оба истинны',['когда хотя бы одно истинно','когда A ложно','когда B ложно'],'Повторение.'],['Чему равно НЕ (НЕ A)?','A',['НЕ A','0','1'],'Повторение.']])],
+net:[
+()=>{const a=ri(4,9),b=ri(10,14);const v=2**a,s=2**b;return{q:'Файл объёмом '+v+' Кбайт передаётся по каналу со скоростью '+s+' бит/с. Сколько секунд займёт передача?',a:v*1024*8/s,h:'Переведи Кбайт в биты: 1 Кбайт = 1024 · 8 бит. Время = объём : скорость.',e:v+'·1024·8 / '+s+' = '+v*1024*8/s+' с'}},
+()=>{const valid=()=>[ri(1,255),ri(0,255),ri(0,255),ri(1,254)].join('.'),bad=()=>pk([()=>[ri(1,255),ri(256,999),ri(0,255),ri(1,254)].join('.'),()=>[ri(1,255),ri(0,255),ri(0,255),ri(0,255),ri(1,9)].join('.'),()=>[ri(1,255),ri(0,255),ri(1,254)].join('.')])();const c=[valid(),valid()],w=[bad(),bad()];if(new Set([...c,...w]).size<4)return G.net[1]();return{q:'Выберите корректные IP-адреса компьютеров:',o:sh([...c,...w]),c,h:'IP-адрес — четыре числа от 0 до 255, разделённые точками. §4.2.2.',e:'Верные: '+c.join(', ')}},
+()=>{const pr=pk(['http','ftp','https']),sv=pk(['www.school.ru','info.edu.ru','portal.net','www.sport.com']),d=pk(['docs','img','files','lessons']),f=pk(['index','task','book','photo']),x=pk(['html','pdf','jpg','doc']),url=pr+'://'+sv+'/'+d+'/'+f+'.'+x,t=ri(0,2);const A=[['Какой протокол указан в адресе?',pr,['http','ftp','https','mailto','smtp'].filter(z=>z!==pr).slice(0,3)],['Как называется имя файла в этом адресе?',f+'.'+x,[d,sv,f+'.'+pk(['txt','png']).replace(x,'zip')]],['Каково доменное имя сервера?',sv,[d,f+'.'+x,pr]]][t];return{q:'Дан адрес: '+url+'.<br>'+A[0],o:[A[1],...[...new Set(A[2])].filter(z=>z!==A[1]).slice(0,3)],h:'Адрес устроен так: протокол://сервер/каталог/файл. §4.3.1.',e:'В адресе '+url+' ответ: '+A[1]}},
+()=>{const u=pk(['ivanov','petrova','student','alex']),d=pk(['mail.ru','yandex.ru','school.edu','gmail.com']),t=pk([0,1]);return{q:'Дан адрес электронной почты '+u+'@'+d+'. '+(t?'Что является именем пользователя?':'Что является именем почтового сервера (домена)?'),o:t?[u,d,u+'@',pk(['mail','com'])]:[d,u,'@'+d,u+'@'],h:'Знак @ разделяет имя пользователя и имя почтового сервера. §4.3.3.',e:t?'Имя пользователя — до знака @: '+u:'Домен — после знака @: '+d}},
+mcb([['Какой протокол используется для передачи файлов?','FTP',['SMTP','POP3','DNS'],'§4.2.4.'],['Какой протокол используется для отправки почты?','SMTP',['FTP','HTTP','DNS'],'§4.3.3.'],['Какой протокол используется для передачи веб-страниц?','HTTP',['FTP','SMTP','POP3'],'§4.2.4.'],['Что делает служба DNS?','преобразует доменные имена в IP-адреса',['шифрует файлы','ускоряет передачу данных','защищает от вирусов'],'§4.2.3.'],['Основной набор протоколов Интернета называется…','TCP/IP',['HTML/HTTP','FTP/SMTP','DNS/URL'],'§4.2.4.'],['Как называется сеть, объединяющая компьютеры в одном здании или кабинете?','локальная',['глобальная','региональная','всемирная'],'§4.1.2.'],['Что такое браузер?','программа для просмотра веб-страниц',['сервер для хранения почты','поисковая система','протокол передачи'],'§4.3.1.'],['Что такое гиперссылка?','элемент страницы, при щелчке по которому открывается другой документ',['файл с картинкой','электронное письмо','название сайта'],'§4.3.1.']])]};
+const mk=id=>{const r=pk(G[id])();r.t=id;
+if(r.c){r.type='ms';r.opts=r.o;r.cs=r.opts.map((o,i)=>r.c.includes(o)?i:-1).filter(i=>i>=0)}
+else if(r.x!==undefined)r.type='txt';
+else if(r.o){r.type='mc';if(r.fix){r.opts=r.o;r.ci=r.ci0}else{r.opts=sh(r.o);r.ci=r.opts.indexOf(r.o[0])}}
+else r.type='num';return r};
+const $=s=>document.querySelector(s);
+const load=()=>{try{return JSON.parse(localStorage.getItem('inf9_1'))||{t:{},h:[]}}catch(e){return{t:{},h:[]}}};
+let ST=load(),S=null;const save=()=>{try{localStorage.setItem('inf9_1',JSON.stringify(ST))}catch(e){}};
+const acc=id=>{const t=ST.t[id];return t&&t.ok+t.bad?Math.round(t.ok/(t.ok+t.bad)*100):null};
+const col=p=>p===null?'var(--bd)':p>=75?'var(--ok)':p>=50?'#e0a030':'var(--bad)';
+function home(){S=null;let h=`<h1>Тренажёр · Информатика 9 класс</h1><p class="m">По учебнику Л. Л. Босовой и А. Ю. Босовой. Числа, программы и варианты ответов каждый раз новые — заучить не получится, нужно думать 🙂</p>
+<button class="big card" onclick="start('mix')">🎯 Случайный микс — 10 заданий из всех тем</button>
+<button class="big card" onclick="start('test')">📝 Пробный тест — 15 заданий, без подсказок, результат в конце</button>
+<button class="big card" onclick="start('weak')">🔁 Работа над ошибками — чаще попадаются слабые темы</button>
+<button class="big card" onclick="stats()">📊 Статистика и аналитика</button><h2>Тренировка по темам</h2><div class="grid">`;
+T.forEach(t=>{const a=acc(t.id);h+=`<button class="tc" onclick="start('topic','${t.id}')"><b>${t.i} ${t.n}</b><small>${t.s}</small><div class="rb" style="margin-top:8px"><span style="width:auto">${a===null?'ещё нет данных':a+'%'}</span><span class="t"><i style="width:${a||0}%;background:${col(a)}"></i></span></div></button>`});
+$('#app').innerHTML=h+'</div>'}
+function start(mode,id){const N=mode==='test'?15:10;let ids=[];
+if(mode==='topic')ids=Array(N).fill(id);
+else if(mode==='weak'){const w=T.map(t=>{const a=acc(t.id);return[t.id,a===null?.5:1.1-a/100]});const sum=w.reduce((s,x)=>s+x[1],0);for(let i=0;i<N;i++){let r=Math.random()*sum;for(const x of w){r-=x[1];if(r<=0){ids.push(x[0]);break}}}while(ids.length<N)ids.push(pk(T).id)}
+else{ids=sh(T.map(t=>t.id));while(ids.length<N)ids.push(pk(T).id);ids=sh(ids).slice(0,N)}
+const seen=new Set(),qs=[];for(const i of ids){let q,n=0;do{q=mk(i)}while(seen.has(q.q)&&++n<40);seen.add(q.q);qs.push(q)}
+S={mode,id,qs,i:0,res:[],locked:false,hu:false,sel:-1,ms:[]};qv()}
+function qv(){const q=S.qs[S.i],test=S.mode==='test',n=S.qs.length,tp=T.find(t=>t.id===q.t);S.hu=false;S.sel=-1;S.ms=[];
+const body=q.type==='mc'?q.opts.map((o,k)=>`<button class="opt" id="o${k}" onclick="pick(${k})">${esc(o)}</button>`).join(''):q.type==='ms'?'<div class="sub">Выберите все верные варианты</div>'+q.opts.map((o,k)=>`<button class="opt" id="o${k}" onclick="tog(${k})">${esc(o)}</button>`).join(''):'<input id="ans" autocomplete="off" inputmode="'+(q.type==='num'?'decimal':'text')+'" placeholder="'+(q.type==='num'?'Ответ — число':'Введите ответ')+'">';
+$('#app').innerHTML=`<div class="top"><button class="g" onclick="if(confirm('Выйти? Ответы уже сохранены в статистике.'))home()">← Меню</button><span>${S.i+1} / ${n}${test?' · тест':''}</span></div><div class="bar"><i style="width:${S.i/n*100}%"></i></div>
+<div class="card"><div class="tag">${tp.i} ${tp.n}</div><div class="q">${q.q}</div>${body}
+<div id="hint" class="hint" hidden></div><div class="row">${test?'':'<button class="g" onclick="hint()">💡 Подсказка</button>'}<button class="p" id="chk" onclick="check()">${test?'Ответить':'Проверить'}</button></div><div id="fb"></div></div>`;
+const a=$('#ans');if(a){a.focus();a.onkeydown=e=>{if(e.key==='Enter')check()}}}
+function pick(k){if(S.locked)return;S.sel=k;document.querySelectorAll('.opt').forEach((b,i)=>b.classList.toggle('sel',i===k))}
+function tog(k){if(S.locked)return;const i=S.ms.indexOf(k);i<0?S.ms.push(k):S.ms.splice(i,1);$('#o'+k).classList.toggle('sel',i<0)}
+function hint(){if(S.locked)return;const h=$('#hint');h.hidden=false;h.innerHTML='💡 '+S.qs[S.i].h;S.hu=true}
+function check(){if(S.locked)return;const q=S.qs[S.i],test=S.mode==='test';let ok,user,cor;
+if(q.type==='mc'){if(S.sel<0)return;ok=S.sel===q.ci;user=q.opts[S.sel];cor=q.opts[q.ci]}
+else if(q.type==='ms'){if(!S.ms.length)return;ok=S.ms.slice().sort().join()===q.cs.slice().sort().join();user=S.ms.map(i=>q.opts[i]).join(', ');cor=q.cs.map(i=>q.opts[i]).join(', ')}
+else if(q.type==='txt'){const raw=$('#ans').value;if(!raw.trim())return;ok=nm(raw)===nm(q.x);user=raw.trim();cor=q.x}
+else{const raw=$('#ans').value;if(!raw.trim())return;const x=parseFloat(raw.replace(/\s/g,'').replace(',','.').replace('−','-'));ok=isFinite(x)&&Math.abs(x-q.a)<1e-6;user=raw.trim();cor=F(q.a)}
+S.res.push({q,ok,user,cor,hu:S.hu});
+const t=ST.t[q.t]||(ST.t[q.t]={ok:0,bad:0,h:0});ok?t.ok++:t.bad++;if(S.hu)t.h++;save();
+if(test){nextQ();return}
+S.locked=true;
+if(q.type==='mc')document.querySelectorAll('.opt').forEach((b,i)=>{if(i===q.ci)b.classList.add('ok');else if(i===S.sel)b.classList.add('no')});
+else if(q.type==='ms')document.querySelectorAll('.opt').forEach((b,i)=>{const c=q.cs.includes(i),s=S.ms.includes(i);if(c)b.classList.add('ok');else if(s)b.classList.add('no')});
+else $('#ans').disabled=true;
+$('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?'✅ Верно!'+(S.hu?' (с подсказкой)':''):'❌ Неверно. Правильный ответ: '+esc(cor)}</b><br><small>${q.e}</small></div>`;
+const c=$('#chk');c.textContent=S.i+1>=S.qs.length?'Результат →':'Дальше →';c.onclick=nextQ}
+function nextQ(){S.locked=false;S.i++;S.i>=S.qs.length?finish():qv()}
+function finish(){const ok=S.res.filter(r=>r.ok).length,n=S.res.length;ST.h.push({ts:Date.now(),m:S.mode,ok,n});ST.h=ST.h.slice(-30);save();
+const p=Math.round(ok/n*100),errs=S.res.filter(r=>!r.ok),test=S.mode==='test';
+let h=`<div class="card" style="text-align:center"><div class="m">Результат</div><div class="big2" style="color:${col(p)}">${ok} из ${n} · ${p}%</div>${test?`<div class="m">Ориентировочная оценка: <b>${p>=85?5:p>=65?4:p>=40?3:2}</b></div>`:''}<div class="row"><button class="p" onclick="start('${S.mode}',${S.id?`'${S.id}'`:'null'})">Ещё раз (новые задания)</button><button onclick="home()">В меню</button></div></div>`;
+if(errs.length)h+='<h2>Разбор ошибок</h2><div class="card">'+errs.map(r=>`<div class="err"><div>${r.q.q}</div><small>Твой ответ: ${esc(r.user)} · Правильно: <b>${esc(r.cor)}</b><br>${r.q.e}</small></div>`).join('')+'</div>';
+else h+='<p class="m" style="text-align:center">Без ошибок! 🎉</p>';
+$('#app').innerHTML=h}
+function stats(){let ok=0,bad=0,hh=0;Object.values(ST.t).forEach(t=>{ok+=t.ok;bad+=t.bad;hh+=t.h});const n=ok+bad,p=n?Math.round(ok/n*100):0;
+let h=`<div class="top"><button class="g" onclick="home()">← Меню</button><b>Статистика</b><span></span></div>`;
+if(!n)return $('#app').innerHTML=h+'<div class="card m">Пока нет данных — ответьте на несколько заданий.</div>';
+h+=`<div class="card" style="text-align:center"><div class="big2" style="color:${col(p)}">${p}%</div><div class="m">верных ответов · всего ${n} (✅ ${ok} / ❌ ${bad}) · с подсказкой: ${hh}</div></div><h2>По темам</h2><div class="card">`;
+const rows=T.map(t=>({t,a:acc(t.id),d:ST.t[t.id]||{ok:0,bad:0,h:0}}));
+rows.forEach(r=>{h+=`<div class="rb"><span>${r.t.i} ${r.t.n}</span><span class="t"><i style="width:${r.a||0}%;background:${col(r.a)}"></i></span><span style="width:84px;text-align:right">${r.a===null?'—':r.a+'% ('+r.d.ok+'/'+(r.d.ok+r.d.bad)+')'}</span></div>`});
+h+='</div>';const weak=rows.filter(r=>r.a!==null&&r.d.ok+r.d.bad>=3&&r.a<60).sort((a,b)=>a.a-b.a);
+h+='<h2>На что обратить внимание</h2><div class="card">'+(weak.length?weak.map(r=>`<div class="rb"><span style="width:auto;flex:1">⚠️ ${r.t.n} — ${r.a}%</span><button onclick="start('topic','${r.t.id}')">Тренировать</button></div>`).join(''):'<span class="m">Слабых тем пока нет (нужно хотя бы 3 ответа по теме и точность ниже 60%).</span>')+'</div>';
+const best=rows.filter(r=>r.a!==null&&r.d.ok+r.d.bad>=3&&r.a>=80);if(best.length)h+=`<p class="m">💪 Сильные темы: ${best.map(r=>r.t.n).join(', ')}</p>`;
+if(ST.h.length){const l=ST.h.slice(-12);h+='<h2>Динамика по занятиям</h2><div class="card"><div class="ch">'+l.map(s=>{const q=Math.round(s.ok/s.n*100);return`<div title="${q}%" style="height:${Math.max(q,3)}%;background:${col(q)}"></div>`}).join('')+`</div><div class="m" style="font-size:.8rem">Последние ${l.length} занятий (слева — старые). Последнее: ${l[l.length-1].ok}/${l[l.length-1].n}, ${new Date(l[l.length-1].ts).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div></div>`}
+h+='<p style="text-align:center"><button class="g" onclick="if(confirm(\'Сбросить всю статистику?\')){ST={t:{},h:[]};save();stats()}">Сбросить статистику</button></p>';
+$('#app').innerHTML=h}
+home();
+</script></body></html>
